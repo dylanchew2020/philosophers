@@ -52,7 +52,7 @@ $(OBJ_DIR):
 	@ printf "$(_INFO) Philosophers object directory created.\n"
 
 run: #[no_of_philo] [time_to_die] [time_to_eat] [time_to_sleep] [no_of_times_each_philo_must_eat]
-	@ ./philo 1 800 200 200
+	@ ./philo 4 310 200 100
 	
 clean:
 	@ $(RM) $(OBJ)

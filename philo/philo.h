@@ -6,7 +6,7 @@
 /*   By: lchew <lchew@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 14:23:16 by lchew             #+#    #+#             */
-/*   Updated: 2023/03/23 14:23:54 by lchew            ###   ########.fr       */
+/*   Updated: 2023/03/25 23:16:09 by lchew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,14 +37,19 @@ typedef struct s_philo
 	int				num_must_eat;
 	int				*is_dead;
 	int				*is_full;
-	int				*forks;
-	int				*last_eat;
+	int				*fork;
+	long long		start_time;
+	long long		*last_eat;
 	pthread_mutex_t	*print;
 }				t_philo;
 
 void	init_philo(t_philo *philo, int argc, char *argv[]);
-void	create_philo(int num_philo);
+void	create_philo(t_philo *philo);
 void	*philo_routine(void *arg);
+int		check_philo_status(t_philo *philo);
 long	ft_atoi(const char *str);
+void	*ft_calloc(size_t nmemb, size_t size);
+void	ft_bzero(void *s, size_t n);
+long long	get_timestamp_ms(long long start_time);
 
 #endif
