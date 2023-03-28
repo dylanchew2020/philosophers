@@ -15,7 +15,7 @@ NAME	=	philo
 
 # MANDATORY SOURCE CODE
 SRC_DIR = ./
-SRC		= philo.c philo_utils.c
+SRC		= philo.c philo_utils.c philo_utils_2.c
 OBJ_DIR = ./obj/
 OBJ		= $(SRC:%.c=$(OBJ_DIR)%.o)
 

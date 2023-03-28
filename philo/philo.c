@@ -6,7 +6,7 @@
 /*   By: lchew <lchew@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 14:22:47 by lchew             #+#    #+#             */
-/*   Updated: 2023/03/25 23:38:10 by lchew            ###   ########.fr       */
+/*   Updated: 2023/03/28 18:01:19 by lchew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@ int	main(int argc, char *argv[])
 
 void	init_philo(t_philo *philo, int argc, char *argv[])
 {
-	struct timeval	tv;
-
 	philo->num_philo = ft_atoi(argv[1]);
 	philo->time_to_die = ft_atoi(argv[2]);
 	philo->time_to_eat = ft_atoi(argv[3]);
@@ -47,11 +45,33 @@ void	init_philo(t_philo *philo, int argc, char *argv[])
 	philo->id = 0;
 	philo->is_dead = ft_calloc(philo->num_philo, sizeof(int));
 	philo->is_full = ft_calloc(philo->num_philo, sizeof(int));
-	philo->fork = ft_calloc(philo->num_philo, sizeof(int));
-	gettimeofday(&tv, NULL);
-	philo->start_time = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+	philo->fork = ft_calloc(philo->num_philo, sizeof(pthread_mutex_t));
 	philo->last_eat = ft_calloc(philo->num_philo, sizeof(int));
-	philo->print = ft_calloc(philo->num_philo, sizeof(pthread_mutex_t));
+	init_last_eat(philo);
+}
+
+void	init_mutex(t_philo *philo)
+{
+	int	i;
+
+	i = 0;
+	while (i < philo->num_philo)
+		pthread_mutex_init(&philo->fork[i++], NULL);
+	pthread_mutex_init(&philo->message, NULL);
+	pthread_mutex_init(&philo->time, NULL);
+}
+
+void	init_last_eat(t_philo *philo)
+{
+	int				i;
+	struct timeval	tv;
+
+	i = 0;
+	while (i < philo->num_philo)
+	{
+		gettimeofday(&tv, NULL);
+		philo->last_eat[i++] = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+	}
 }
 
 void	create_philo(t_philo *philo)
@@ -61,8 +81,7 @@ void	create_philo(t_philo *philo)
 
 	i = 0;
 	thread = ft_calloc(philo->num_philo, sizeof(pthread_t));
-	while (i < philo->num_philo)
-		pthread_mutex_init(&philo->print[i++], NULL);
+	init_mutex(philo);
 	i = 0;
 	while (i < philo->num_philo)
 	{
@@ -75,46 +94,57 @@ void	create_philo(t_philo *philo)
 		pthread_join(thread[i++], NULL);
 	i = 0;
 	while (i < philo->num_philo)
-		pthread_mutex_destroy(&philo->print[i++]);
+		pthread_mutex_destroy(&philo->fork[i++]);
+	pthread_mutex_destroy(&philo->message);
+	pthread_mutex_destroy(&philo->time);
 }
 
 void	*philo_routine(void *arg)
 {
 	t_philo			*philo;
 	int				i;
+	// pthread_mutex_t	*left_fork;
+	// pthread_mutex_t	*right_fork;
+	int				left;
+	int				right;
 
 	philo = (t_philo *)arg;
 	i = philo->id;
+	// *left_fork = philo->fork[i];
+	// *right_fork = philo->fork[(i + 1) % philo->num_philo];
+	left = i;
+	right = (i + 1) % philo->num_philo;
 	while (1)
 	{
-		if (get_timestamp_ms(philo->start_time) - philo->last_eat[i] > philo->time_to_die)
+		pthread_mutex_lock(&philo->fork[left]);
+		pthread_mutex_lock(&philo->fork[right]);
+		// printf("Time since last eat: %lli", get_time(philo) - philo->last_eat[i]);
+		if (get_time(philo) - philo->last_eat[i] > philo->time_to_die)
 			philo->is_dead[i] = 1;
 		if (check_philo_status(philo) == 1)
 		{
-			printf("Philosopher %i is dead\n", i + 1);
+			pthread_mutex_unlock(&philo->fork[left]);
+			pthread_mutex_unlock(&philo->fork[right]);
 			return (NULL);
 		}
-		pthread_mutex_lock(&philo->print[i]);
-		printf("%llims %i is thinking\n", get_timestamp_ms(philo->start_time), i + 1);
-		pthread_mutex_unlock(&philo->print[i]);
-		if (philo->fork[i] == 0 && philo->fork[(i + 1) % philo->num_philo] == 0)
+		write_message(philo, i + 1, "has taken a fork");
+		write_message(philo, i + 1, "has taken a fork");
+		write_message(philo, i + 1, "is eating");
+		usleep(philo->time_to_eat * 1000);
+		if (get_time(philo) - philo->last_eat[i] > philo->time_to_die)
+			philo->is_dead[i] = 1;
+		if (check_philo_status(philo) == 1)
 		{
-			pthread_mutex_lock(&philo->print[i]);
-			philo->fork[i] = 1;
-			printf("%llims %i has taken a fork\n", get_timestamp_ms(philo->start_time), i + 1);
-			philo->fork[(i + 1) % philo->num_philo] = 1;
-			printf("%llims %i has taken a fork\n", get_timestamp_ms(philo->start_time), i + 1);
-			printf("%llims %i is eating\n", get_timestamp_ms(philo->start_time), i + 1);
-			pthread_mutex_unlock(&philo->print[i]);
-			usleep(philo->time_to_eat * 1000);
+			pthread_mutex_unlock(&philo->fork[left]);
+			pthread_mutex_unlock(&philo->fork[right]);
+			return (NULL);
 		}
-		pthread_mutex_lock(&philo->print[i]);
-		philo->fork[i] = 0;
-		philo->fork[(i + 1) % philo->num_philo] = 0;
-		philo->last_eat[i] = get_timestamp_ms(philo->start_time);
-		printf("%llims %i is sleeping\n", get_timestamp_ms(philo->start_time), i + 1);
-		pthread_mutex_unlock(&philo->print[i]);
+		pthread_mutex_unlock(&philo->fork[left]);
+		pthread_mutex_unlock(&philo->fork[right]);
+		philo->last_eat[i] = get_time(philo);
+		write_message(philo, i + 1, "is sleeping");
 		usleep(philo->time_to_sleep * 1000);
+		write_message(philo, i + 1, "is thinking");
 	}
 	return (NULL);
 }
@@ -127,19 +157,40 @@ int	check_philo_status(t_philo *philo)
 	while (i < philo->num_philo)
 	{
 		if (philo->is_dead[i] == 1)
+		{
+			write_message(philo, i + 1, "died");
 			return (1);
+		}
 		i++;
 	}
 	return (0);
 }
 
-long long	get_timestamp_ms(long long start_time)
+void	write_message(t_philo *philo, int id, char *message)
+{
+	char	*time;
+	char	*philo_id;
+
+	pthread_mutex_lock(&philo->message);
+	time = ft_itoa(get_time(philo));
+	philo_id = ft_itoa(id);
+	write(1, time, ft_strlen(time));
+	write(1, " ", 1);
+	write(1, philo_id, ft_strlen(philo_id));
+	write(1, " ", 1);
+	write(1, message, ft_strlen(message));
+	write(1, "\n", 1);
+	pthread_mutex_unlock(&philo->message);
+}
+
+int	get_time(t_philo *philo)
 {
 	struct timeval	tv;
 	long long		timestamp_ms;
 
+	pthread_mutex_lock(&philo->time);
 	gettimeofday(&tv, NULL);
-	timestamp_ms = (tv.tv_sec * 1000) + (tv.tv_usec / 1000) - start_time;
-	timestamp_ms = timestamp_ms - timestamp_ms % 10;
+	timestamp_ms = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+	pthread_mutex_unlock(&philo->time);
 	return (timestamp_ms);
 }

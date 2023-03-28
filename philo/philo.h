@@ -6,13 +6,14 @@
 /*   By: lchew <lchew@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 14:23:16 by lchew             #+#    #+#             */
-/*   Updated: 2023/03/25 23:16:09 by lchew            ###   ########.fr       */
+/*   Updated: 2023/03/28 13:38:32 by lchew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
 
+# include <limits.h>	// INT_MIN
 # include <string.h>	// memset
 # include <stdio.h>		// printf
 # include <stdlib.h>	// malloc, free, (exit)
@@ -37,19 +38,24 @@ typedef struct s_philo
 	int				num_must_eat;
 	int				*is_dead;
 	int				*is_full;
-	int				*fork;
-	long long		start_time;
+	pthread_mutex_t	*fork;
 	long long		*last_eat;
-	pthread_mutex_t	*print;
+	pthread_mutex_t	message;
+	pthread_mutex_t	time;
 }				t_philo;
 
 void	init_philo(t_philo *philo, int argc, char *argv[]);
+void	init_mutex(t_philo *philo);
+void	init_last_eat(t_philo *philo);
 void	create_philo(t_philo *philo);
 void	*philo_routine(void *arg);
 int		check_philo_status(t_philo *philo);
+void	write_message(t_philo *philo, int id, char *message);
+int		get_time(t_philo *philo);
+
 long	ft_atoi(const char *str);
 void	*ft_calloc(size_t nmemb, size_t size);
 void	ft_bzero(void *s, size_t n);
-long long	get_timestamp_ms(long long start_time);
-
+size_t	ft_strlen(const char *s);
+char	*ft_itoa(int nbr);
 #endif

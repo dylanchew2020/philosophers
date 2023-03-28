@@ -6,7 +6,7 @@
 /*   By: lchew <lchew@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 16:22:28 by lchew             #+#    #+#             */
-/*   Updated: 2023/03/25 22:01:33 by lchew            ###   ########.fr       */
+/*   Updated: 2023/03/26 15:24:42 by lchew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,4 +61,20 @@ void	*ft_calloc(size_t nmemb, size_t size)
 void	ft_bzero(void *s, size_t n)
 {
 	memset(s, 0, n);
+}
+
+/*
+**	The ft_strlen() function computes the length of the string s.
+**
+**	The ft_strlen() function returns the number of characters that precede the 
+**	terminating NUL character.
+*/
+size_t	ft_strlen(const char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s[i] != '\0')
+		++i;
+	return (i);
 }
