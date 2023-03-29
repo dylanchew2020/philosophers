@@ -6,7 +6,7 @@
 /*   By: lchew <lchew@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 14:23:16 by lchew             #+#    #+#             */
-/*   Updated: 2023/03/28 13:38:32 by lchew            ###   ########.fr       */
+/*   Updated: 2023/03/29 11:28:31 by lchew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ typedef struct s_philo
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
-	int				num_must_eat;
+	int				*num_must_eat;
 	int				*is_dead;
 	int				*is_full;
 	pthread_mutex_t	*fork;
@@ -44,18 +44,27 @@ typedef struct s_philo
 	pthread_mutex_t	time;
 }				t_philo;
 
-void	init_philo(t_philo *philo, int argc, char *argv[]);
-void	init_mutex(t_philo *philo);
-void	init_last_eat(t_philo *philo);
-void	create_philo(t_philo *philo);
-void	*philo_routine(void *arg);
-int		check_philo_status(t_philo *philo);
-void	write_message(t_philo *philo, int id, char *message);
-int		get_time(t_philo *philo);
+void		init_philo(t_philo *philo, int argc, char *argv[]);
+void		init_mutex(t_philo *philo);
+void		init_eat(t_philo *philo, int num_must_eat);
+void		create_philo(t_philo *philo);
+void		*philo_routine(void *arg);
+int			philo_eat(t_philo *philo, int id, int left, int right);
+int			check_philo_status(t_philo *philo, int id);
+void		write_message(t_philo *philo, int id, char *message);
 
-long	ft_atoi(const char *str);
-void	*ft_calloc(size_t nmemb, size_t size);
-void	ft_bzero(void *s, size_t n);
-size_t	ft_strlen(const char *s);
-char	*ft_itoa(int nbr);
+/* ERROR */
+
+int			error_check(t_philo *philo);
+int			check_fork(t_philo *philo);
+
+/* UTILS */
+
+long		ft_atoi(const char *str);
+void		*ft_calloc(size_t nmemb, size_t size);
+void		ft_bzero(void *s, size_t n);
+size_t		ft_strlen(const char *s);
+long long	ft_gettime(void);
+char		*ft_itoa(int nbr);
+
 #endif

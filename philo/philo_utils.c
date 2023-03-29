@@ -6,7 +6,7 @@
 /*   By: lchew <lchew@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 16:22:28 by lchew             #+#    #+#             */
-/*   Updated: 2023/03/26 15:24:42 by lchew            ###   ########.fr       */
+/*   Updated: 2023/03/29 11:09:41 by lchew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,4 +77,14 @@ size_t	ft_strlen(const char *s)
 	while (s[i] != '\0')
 		++i;
 	return (i);
+}
+
+long long	ft_gettime(void)
+{
+	struct timeval	tv;
+	long long		timestamp_ms;
+
+	gettimeofday(&tv, NULL);
+	timestamp_ms = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+	return (timestamp_ms);
 }

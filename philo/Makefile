@@ -15,7 +15,7 @@ NAME	=	philo
 
 # MANDATORY SOURCE CODE
 SRC_DIR = ./
-SRC		= philo.c philo_utils.c philo_utils_2.c
+SRC		= philo.c philo_utils.c philo_utils_2.c philo_thread.c error.c
 OBJ_DIR = ./obj/
 OBJ		= $(SRC:%.c=$(OBJ_DIR)%.o)
 
@@ -52,7 +52,7 @@ $(OBJ_DIR):
 	@ printf "$(_INFO) Philosophers object directory created.\n"
 
 run: #[no_of_philo] [time_to_die] [time_to_eat] [time_to_sleep] [no_of_times_each_philo_must_eat]
-	@ ./philo 4 310 200 100
+	@ ./philo 1 800 200 200
 	
 clean:
 	@ $(RM) $(OBJ)
