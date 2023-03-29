@@ -6,7 +6,7 @@
 /*   By: lchew <lchew@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 14:23:16 by lchew             #+#    #+#             */
-/*   Updated: 2023/03/29 11:28:31 by lchew            ###   ########.fr       */
+/*   Updated: 2023/03/29 20:19:08 by lchew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,8 @@ void		init_mutex(t_philo *philo);
 void		init_eat(t_philo *philo, int num_must_eat);
 void		create_philo(t_philo *philo);
 void		*philo_routine(void *arg);
-int			philo_eat(t_philo *philo, int id, int left, int right);
-int			check_philo_status(t_philo *philo, int id);
+int			philo_eat(t_philo *philo, int id);
+int			philo_is_dead(t_philo *philo, int id);
 void		write_message(t_philo *philo, int id, char *message);
 
 /* ERROR */

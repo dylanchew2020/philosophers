@@ -6,7 +6,7 @@
 /*   By: lchew <lchew@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 14:22:47 by lchew             #+#    #+#             */
-/*   Updated: 2023/03/29 11:28:55 by lchew            ###   ########.fr       */
+/*   Updated: 2023/03/29 21:56:20 by lchew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,21 +35,21 @@ int	main(int argc, char *argv[])
 
 void	init_philo(t_philo *philo, int argc, char *argv[])
 {
+	philo->id = 0;
 	philo->num_philo = ft_atoi(argv[1]);
 	philo->time_to_die = ft_atoi(argv[2]);
 	philo->time_to_eat = ft_atoi(argv[3]);
 	philo->time_to_sleep = ft_atoi(argv[4]);
-	if (argc == 6)
-		philo->num_must_eat = ft_calloc(philo->num_philo, sizeof(int));
-	else
-		philo->num_must_eat = NULL;
-	philo->id = 0;
+	philo->num_must_eat = ft_calloc(philo->num_philo, sizeof(int));
 	philo->is_dead = ft_calloc(philo->num_philo, sizeof(int));
 	philo->is_full = ft_calloc(philo->num_philo, sizeof(int));
 	philo->last_eat = ft_calloc(philo->num_philo, sizeof(int));
-	init_last_eat(philo);
 	philo->fork = ft_calloc(philo->num_philo, sizeof(pthread_mutex_t));
 	init_mutex(philo);
+	if (argc == 6)
+		init_eat(philo, ft_atoi(argv[5]));
+	else
+		init_eat(philo, -1);
 }
 
 void	init_mutex(t_philo *philo)
