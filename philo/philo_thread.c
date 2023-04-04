@@ -6,13 +6,14 @@
 /*   By: lchew <lchew@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/29 10:52:31 by lchew             #+#    #+#             */
-/*   Updated: 2023/03/29 22:34:23 by lchew            ###   ########.fr       */
+/*   Updated: 2023/04/04 21:35:52 by lchew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	create_philo(t_philo *philo)
+/*  */
+int	create_philo(t_philo *philo)
 {
 	pthread_t	*thread;
 	int			i;
@@ -22,14 +23,18 @@ void	create_philo(t_philo *philo)
 	while (i < philo->num_philo)
 	{
 		philo->id = i;
-		pthread_create(&thread[i++], NULL, &philo_routine, philo);
-		usleep(5);
+		if (pthread_create(&thread[i++], NULL, &philo_routine, philo))
+			return (1);
+		usleep(10);
 	}
+	philo_is_dead(philo);
 	i = 0;
 	while (i < philo->num_philo)
 		pthread_join(thread[i++], NULL);
+	return (0);
 }
 
+/*  */
 void	*philo_routine(void *arg)
 {
 	t_philo			*philo;
@@ -37,20 +42,23 @@ void	*philo_routine(void *arg)
 
 	philo = (t_philo *)arg;
 	id = philo->id;
-	write_message(philo, id + 1, "check");
-	while (1)
+	while (philo->is_dead == -1 && philo->num_must_eat_array[id] != 0)
 	{
 		if (philo_eat(philo, id) == 0)
-			return (NULL);
+			break ;
 		write_message(philo, id + 1, "is sleeping");
-		usleep(philo->time_to_sleep * 1000);
+		if (timer(philo, philo->time_to_sleep) == 0)
+			break ;
 		write_message(philo, id + 1, "is thinking");
-		if (philo->num_must_eat[id] == 0)
-			return (NULL);
 	}
 	return (NULL);
 }
 
+/* 
+	
+	return 1 if philo is alive and successfully eaten.
+	return 0 if philo is dead.
+ */
 int	philo_eat(t_philo *philo, int id)
 {
 	int	i;
@@ -62,62 +70,60 @@ int	philo_eat(t_philo *philo, int id)
 	right = (id + 1) % philo->num_philo;
 	pthread_mutex_lock(&philo->fork[left]);
 	pthread_mutex_lock(&philo->fork[right]);
-	if (philo_is_dead(philo, id) == 0)
+	if (philo->is_dead == -1)
 	{
 		write_message(philo, id + 1, "has taken a fork");
 		write_message(philo, id + 1, "has taken a fork");
+		pthread_mutex_lock(&philo->time);
 		write_message(philo, id + 1, "is eating");
-		usleep(philo->time_to_eat * 1000);
-		if (philo_is_dead(philo, id) == 0)
-		{
-			philo->last_eat[id] = ft_gettime();
-			--philo->num_must_eat[id];
-			i = 1;
-		}
+		philo->last_eat[id] = ft_gettime();
+		pthread_mutex_unlock(&philo->time);
+		i = timer(philo, philo->time_to_eat);
+		--philo->num_must_eat_array[id];
 	}
 	pthread_mutex_unlock(&philo->fork[left]);
 	pthread_mutex_unlock(&philo->fork[right]);
 	return (i);
 }
 
-int	philo_is_dead(t_philo *philo, int id)
+/*  */
+void	philo_is_dead(t_philo *philo)
 {
-	int	i;
+	int	id;
 
-	pthread_mutex_lock(&philo->time);
-	if (ft_gettime() - philo->last_eat[id] > philo->time_to_die)
-		philo->is_dead[id] = 1;
-	i = 0;
-	while (i < philo->num_philo)
+	while (philo->num_full_philo != philo->num_philo)
 	{
-		if (philo->is_dead[i] == 1)
+		id = 0;
+		philo->num_full_philo = 0;
+		while (id < philo->num_philo)
 		{
-			if (i == id)
-				write_message(philo, i + 1, "died");
+			pthread_mutex_lock(&philo->time);
+			if (ft_gettime() - philo->last_eat[id] > philo->time_to_die)
+			{
+				philo->is_dead = id;
+				write_message(philo, id + 1, "died");
+			}
 			pthread_mutex_unlock(&philo->time);
-			return (1);
+			if (philo->is_dead != -1)
+				return ;
+			if (philo->num_must_eat_array[id] == 0)
+				++philo->num_full_philo;
+			++id;
 		}
-		++i;
 	}
-	pthread_mutex_unlock(&philo->time);
-	return (0);
 }
 
-void	write_message(t_philo *philo, int id, char *message)
+/*  */
+int	timer(t_philo *philo, int time)
 {
-	char	*time;
-	char	*philo_id;
-	char	*tmp;
+	long long	init_time;
 
-	pthread_mutex_lock(&philo->message);
-	time = ft_itoa(ft_gettime() - philo->last_eat[id - 1]);
-	philo_id = ft_itoa(id);
-	tmp = ft_itoa(philo->num_must_eat[id - 1]);
-	write(1, time, ft_strlen(time));
-	write(1, "ms ", 3);
-	write(1, philo_id, ft_strlen(philo_id));
-	write(1, " ", 1);
-	write(1, message, ft_strlen(message));
-	write(1, "\n", 1);
-	pthread_mutex_unlock(&philo->message);
+	init_time = ft_gettime();
+	while (philo->is_dead == -1)
+	{
+		if (ft_gettime() - init_time >= time)
+			return (1);
+		usleep(100);
+	}
+	return (0);
 }

@@ -6,33 +6,17 @@
 /*   By: lchew <lchew@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 16:22:28 by lchew             #+#    #+#             */
-/*   Updated: 2023/03/29 11:09:41 by lchew            ###   ########.fr       */
+/*   Updated: 2023/04/04 21:36:33 by lchew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-/*
-	The ft_atoi() function converts the initial portion of the string pointed to 
-	by str to int representation.
-*/
-long	ft_atoi(const char *str)
+void	write_message(t_philo *philo, int id, char *message)
 {
-	long	res;
-	int		sign;
-
-	res = 0;
-	sign = 1;
-	while ((*str == ' ') || (*str >= 9 && *str <= 13))
-		str++;
-	if ((*str == '-') || (*str == '+'))
-	{
-		if (*str++ == '-')
-			sign *= -1;
-	}
-	while (*str >= '0' && *str <= '9')
-		res = (res * 10) + (*str++) - '0';
-	return (res * sign);
+	pthread_mutex_lock(&philo->message);
+	printf("%lli %i %s\n", ft_gettime() - philo->start_time, id, message);
+	pthread_mutex_unlock(&philo->message);
 }
 
 /*
@@ -82,9 +66,7 @@ size_t	ft_strlen(const char *s)
 long long	ft_gettime(void)
 {
 	struct timeval	tv;
-	long long		timestamp_ms;
 
 	gettimeofday(&tv, NULL);
-	timestamp_ms = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
-	return (timestamp_ms);
+	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }

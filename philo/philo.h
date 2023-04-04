@@ -6,7 +6,7 @@
 /*   By: lchew <lchew@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 14:23:16 by lchew             #+#    #+#             */
-/*   Updated: 2023/03/29 20:19:08 by lchew            ###   ########.fr       */
+/*   Updated: 2023/04/04 21:33:04 by lchew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,31 +35,38 @@ typedef struct s_philo
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
-	int				*num_must_eat;
-	int				*is_dead;
-	int				*is_full;
+	int				num_must_eat;
+	int				*num_must_eat_array;
+	int				is_dead;
 	pthread_mutex_t	*fork;
+	long long		start_time;
 	long long		*last_eat;
+	int				num_full_philo;
 	pthread_mutex_t	message;
 	pthread_mutex_t	time;
 }				t_philo;
 
+/* INITIALISE */
 void		init_philo(t_philo *philo, int argc, char *argv[]);
 void		init_mutex(t_philo *philo);
 void		init_eat(t_philo *philo, int num_must_eat);
-void		create_philo(t_philo *philo);
+
+/* THREAD */
+int			create_philo(t_philo *philo);
 void		*philo_routine(void *arg);
 int			philo_eat(t_philo *philo, int id);
-int			philo_is_dead(t_philo *philo, int id);
-void		write_message(t_philo *philo, int id, char *message);
+void		philo_is_dead(t_philo *philo);
+int			timer(t_philo *philo, int time);
 
 /* ERROR */
 
-int			error_check(t_philo *philo);
+int			error_check(t_philo *philo, int argc);
+int			check_input(t_philo *philo, int argc);
 int			check_fork(t_philo *philo);
 
 /* UTILS */
 
+void		write_message(t_philo *philo, int id, char *message);
 long		ft_atoi(const char *str);
 void		*ft_calloc(size_t nmemb, size_t size);
 void		ft_bzero(void *s, size_t n);
