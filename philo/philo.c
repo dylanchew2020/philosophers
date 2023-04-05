@@ -6,7 +6,7 @@
 /*   By: lchew <lchew@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 14:22:47 by lchew             #+#    #+#             */
-/*   Updated: 2023/04/04 21:35:30 by lchew            ###   ########.fr       */
+/*   Updated: 2023/04/05 18:07:57 by lchew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,15 @@ int	main(int argc, char *argv[])
 	return (0);
 }
 
-/*  */
+/* 
+	Initializes a t_philo struct with values based on command line arguments. 
+
+	Arguments:
+	- philo: pointer to a t_philo struct
+	- argc: number of command line arguments passed in
+	- argv: array of command line argument strings
+
+*/
 void	init_philo(t_philo *philo, int argc, char *argv[])
 {
 	philo->id = 0;
@@ -55,7 +63,17 @@ void	init_philo(t_philo *philo, int argc, char *argv[])
 		init_eat(philo, -1);
 }
 
-/*  */
+/* 
+	Initializes mutexes for the forks, message, and time in t_philo. 
+	Loops through the number of philosophers and initializes a mutex 
+	for each fork in the fork array. 
+	Also initializes mutexes for the message and time variables.
+	
+	Arguments:
+	- philo: pointer to a t_philo struct
+	
+	Returns: None
+*/
 void	init_mutex(t_philo *philo)
 {
 	int	i;
@@ -67,7 +85,19 @@ void	init_mutex(t_philo *philo)
 	pthread_mutex_init(&philo->time, NULL);
 }
 
-/*  */
+/* 
+	Initializes the starting time and last_eat time for each philo. 
+	Gets the current time using gettimeofday(), calculates the start time in ms.
+	Initializes the last_eat time for each philo in a loop using gettimeofday() 
+	to get the current time and calculate the last_eat time in ms.
+	Sets the num_must_eat_array for each philo to `num_must_eat`.
+	
+	Arguments:
+	- philo: pointer to a t_philo struct
+	- num_must_eat: the no. of meals each philo must eat, or -1 if there is no limit
+	
+	Returns: None
+*/
 void	init_eat(t_philo *philo, int num_must_eat)
 {
 	int				i;
@@ -84,7 +114,18 @@ void	init_eat(t_philo *philo, int num_must_eat)
 	}
 }
 
-/*  */
+
+/* 
+	Frees the memory used by the mutexes and arrays in a t_philo struct. 
+	Destroys the mutexes for the forks, message, and time variables. 
+	Frees the memory allocated for the `num_must_eat_array`, `fork`, 
+	and `last_eat` arrays.
+
+	Arguments:
+	- philo: pointer to a t_philo struct
+
+	Returns: None
+*/
 void	philo_free(t_philo *philo)
 {
 	int	i;
@@ -94,6 +135,7 @@ void	philo_free(t_philo *philo)
 		pthread_mutex_destroy(&philo->fork[i++]);
 	pthread_mutex_destroy(&philo->message);
 	pthread_mutex_destroy(&philo->time);
+	free(philo->num_must_eat_array);
 	free(philo->fork);
 	free(philo->last_eat);
 }

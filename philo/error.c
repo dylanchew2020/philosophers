@@ -6,13 +6,23 @@
 /*   By: lchew <lchew@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/29 11:01:56 by lchew             #+#    #+#             */
-/*   Updated: 2023/04/04 21:35:40 by lchew            ###   ########.fr       */
+/*   Updated: 2023/04/05 21:59:24 by lchew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-/*  */
+/* 
+	Checks for errors in the input arguments and forks.
+	
+	Arguments:
+	- philo: a pointer to a t_philo struct
+	- argc: the number of arguments passed in the command line
+	
+	Returns:
+	- 0 if there were no errors
+	- 1 if there was an error in the input arguments or forks
+*/
 int	error_check(t_philo *philo, int argc)
 {
 	if (check_input(philo, argc) == 1)
@@ -25,7 +35,17 @@ int	error_check(t_philo *philo, int argc)
 	return (0);
 }
 
-/*  */
+/* 
+	Checks the input values for validity.
+	
+	Arguments:
+	- philo: a pointer to a t_philo struct
+	- argc: an integer representing the number of command-line arguments
+	
+	Returns:
+	- 1 if an input value is invalid
+	- 0 otherwise
+*/
 int	check_input(t_philo *philo, int argc)
 {
 	if (philo->num_philo < 1 || philo->num_philo > 200)
@@ -37,11 +57,21 @@ int	check_input(t_philo *philo, int argc)
 	if (philo->time_to_sleep < 60)
 		return (1);
 	if (argc == 6 && philo->num_must_eat < 0)
-			return (1);
+		return (1);
 	return (0);
 }
 
-/*  */
+/* 
+	Check if there are enough fork, since there can only exist one fork per philo. 
+	If not, end the simulation and mark the first philosopher as dead.
+	
+	Arguments:
+	- philo: a pointer to a t_philo struct containing information about the philosophers
+	
+	Returns:
+	- 1 if there is only one philosopher
+	- 0 otherwise
+*/
 int	check_fork(t_philo *philo)
 {
 	if (philo->num_philo < 2)

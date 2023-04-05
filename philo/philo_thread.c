@@ -6,13 +6,22 @@
 /*   By: lchew <lchew@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/29 10:52:31 by lchew             #+#    #+#             */
-/*   Updated: 2023/04/04 21:35:52 by lchew            ###   ########.fr       */
+/*   Updated: 2023/04/05 21:01:28 by lchew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-/*  */
+/* 
+**	Creates threads for each philosopher and waits for them to complete.
+**	
+**	Arguments:
+**	- philo: a pointer to a t_philo struct
+**	
+**	Returns:
+**	- 0 if all threads were created and joined successfully
+**	- 1 if there was an error creating a thread
+*/
 int	create_philo(t_philo *philo)
 {
 	pthread_t	*thread;
@@ -34,7 +43,19 @@ int	create_philo(t_philo *philo)
 	return (0);
 }
 
-/*  */
+/*
+**	Main routine for the philosopher threads. Continuously loops while 
+**	the philosopher is not dead and has not reached the required number 
+**	of meals. Calls the philo_eat function to allow the philosopher to eat, 
+**	and waits for the specified amount of time using the timer function. 
+**	Writes messages to indicate the philosopher's state.
+**	
+**	Arguments:
+**	- arg: a void pointer that is cast to a t_philo pointer
+**	
+**	Returns:
+**	- NULL
+*/
 void	*philo_routine(void *arg)
 {
 	t_philo			*philo;
@@ -55,10 +76,18 @@ void	*philo_routine(void *arg)
 }
 
 /* 
-	
-	return 1 if philo is alive and successfully eaten.
-	return 0 if philo is dead.
- */
+**	Allows a philosopher to eat if they are not already dead. 
+**	The philosopher must acquire two forks to eat, and will release them after
+**	the specified time to eat has elapsed.
+**
+**	Arguments:
+**	- philo: a pointer to a t_philo struct
+**	- id: an integer representing the philosopher's ID
+**
+**	Returns:
+**	- 1 if the philosopher successfully ate
+**	- 0 if the philosopher died while attempting to eat
+*/
 int	philo_eat(t_philo *philo, int id)
 {
 	int	i;
@@ -86,7 +115,20 @@ int	philo_eat(t_philo *philo, int id)
 	return (i);
 }
 
-/*  */
+/*
+** Checks if any philosopher has died due to starvation.
+** 
+** Iterates through each philo to check if the time from last ate is greater
+** than the time to die. If so, the philo is marked as dead, and a message is 
+** printed indicating that they have died. If the philo has reached the 
+** required number of meals, they are counted as having eaten enough. 
+** The function continues to iterate until all philos are full, then exit.
+**
+** Arguments:
+** - philo: a pointer to a t_philo struct
+**
+** Returns: none
+*/
 void	philo_is_dead(t_philo *philo)
 {
 	int	id;
@@ -113,7 +155,18 @@ void	philo_is_dead(t_philo *philo)
 	}
 }
 
-/*  */
+/* 
+**	Waits for a specified amount of time while checking if the is_dead flag 
+**	in the t_philo struct is still set to -1.
+**
+**	Arguments:
+**	- philo: a pointer to a t_philo struct
+**	- time: an integer representing the amount of time to wait in ms
+**
+**	Returns:
+**	- 1 if the timer has elapsed and the philo is still alive
+**	- 0 if the philo is dead
+*/
 int	timer(t_philo *philo, int time)
 {
 	long long	init_time;

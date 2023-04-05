@@ -6,12 +6,22 @@
 /*   By: lchew <lchew@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 16:22:28 by lchew             #+#    #+#             */
-/*   Updated: 2023/04/04 21:36:33 by lchew            ###   ########.fr       */
+/*   Updated: 2023/04/05 18:10:02 by lchew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+/* 
+	Writes a message to the console with a timestamp and philosopher ID.
+
+	Arguments:
+	- philo: pointer to a t_philo struct
+	- id: ID of the philosopher sending the message
+	- message: the message to be printed to the console
+
+	Returns: None
+*/
 void	write_message(t_philo *philo, int id, char *message)
 {
 	pthread_mutex_lock(&philo->message);
@@ -63,6 +73,15 @@ size_t	ft_strlen(const char *s)
 	return (i);
 }
 
+/* 
+	Returns the current time in milliseconds since the Epoch 
+	(00:00:00 UTC, January 1, 1970).
+
+	Arguments: None
+
+	Returns:
+	- A long long integer representing the current time in milliseconds.
+*/
 long long	ft_gettime(void)
 {
 	struct timeval	tv;
