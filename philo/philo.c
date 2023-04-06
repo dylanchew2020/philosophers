@@ -6,7 +6,7 @@
 /*   By: lchew <lchew@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 14:22:47 by lchew             #+#    #+#             */
-/*   Updated: 2023/04/05 18:07:57 by lchew            ###   ########.fr       */
+/*   Updated: 2023/04/06 15:03:15 by lchew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int	main(int argc, char *argv[])
 	if (argc < 5 || argc > 6)
 		return (0);
 	init_philo(&philo, argc, argv);
-	if (error_check(&philo, argc) == 1)
+	if (error_check(&philo, argc, argv) == 1)
 		return (0);
 	create_philo(&philo);
 	return (0);
@@ -113,7 +113,6 @@ void	init_eat(t_philo *philo, int num_must_eat)
 		philo->last_eat[i++] = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 	}
 }
-
 
 /* 
 	Frees the memory used by the mutexes and arrays in a t_philo struct. 

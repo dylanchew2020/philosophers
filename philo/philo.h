@@ -6,7 +6,7 @@
 /*   By: lchew <lchew@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 14:23:16 by lchew             #+#    #+#             */
-/*   Updated: 2023/04/04 21:33:04 by lchew            ###   ########.fr       */
+/*   Updated: 2023/04/06 14:40:33 by lchew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,8 @@ int			timer(t_philo *philo, int time);
 
 /* ERROR */
 
-int			error_check(t_philo *philo, int argc);
-int			check_input(t_philo *philo, int argc);
+int			error_check(t_philo *philo, int argc, char **argv);
+int			check_input(t_philo *philo, int argc, char **argv);
 int			check_fork(t_philo *philo);
 
 /* UTILS */
@@ -73,5 +73,6 @@ void		ft_bzero(void *s, size_t n);
 size_t		ft_strlen(const char *s);
 long long	ft_gettime(void);
 char		*ft_itoa(int nbr);
+int			ft_isdigit_str(char *str);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: lchew <lchew@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/29 10:52:31 by lchew             #+#    #+#             */
-/*   Updated: 2023/04/05 21:01:28 by lchew            ###   ########.fr       */
+/*   Updated: 2023/04/06 15:14:26 by lchew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ int	create_philo(t_philo *philo)
 	i = 0;
 	while (i < philo->num_philo)
 		pthread_join(thread[i++], NULL);
+	free(thread);
 	return (0);
 }
 
