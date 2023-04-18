@@ -6,7 +6,7 @@
 /*   By: lchew <lchew@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/29 10:52:31 by lchew             #+#    #+#             */
-/*   Updated: 2023/04/06 15:14:26 by lchew            ###   ########.fr       */
+/*   Updated: 2023/04/18 17:36:40 by lchew            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,7 +177,7 @@ int	timer(t_philo *philo, int time)
 	{
 		if (ft_gettime() - init_time >= time)
 			return (1);
-		usleep(100);
+		usleep(50);
 	}
 	return (0);
 }
